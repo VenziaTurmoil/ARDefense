@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 let container;
 let camera, scene, renderer;
@@ -71,6 +72,25 @@ function init() {
     group.add(object);
 
   }
+
+  let dart_mesh = null;
+
+  function loadData() {
+    console.log('0');
+    new GLTFLoader()
+      .setPath('assets/models/')
+      .load('dartmonkey__2_.glb', dartMonkeyReader);
+  }
+
+
+  function dartMonkeyReader(gltf) {
+    console.log('1');
+    dart_mesh = null;
+    dart_mesh = gltf.scene;
+    scene.add(dart_mesh);
+  }
+
+  loadData();
 
   //
 
