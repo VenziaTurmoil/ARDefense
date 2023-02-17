@@ -37,32 +37,37 @@ export class BloonManager {
         this.scene = scene;
     }
 
-    addBloon(index) {
+    addBloon(index, position = new Vector3(Math.random() * 2, Math.random() * 2, Math.random() * 2)) {
         // AMMO MESH
         let bloon_mesh = this.bloonMeshes[index].clone();
+        bloon_mesh.position.add(position);
 
         this.scene.add(bloon_mesh);
 
+        let newBloon = null;
+
         if (index == 0) {
-            var newBloon = new RedBloon();
+            newBloon = new RedBloon(this);
             newBloon.mesh = bloon_mesh;
             this.bloonArray.push(newBloon);
         }
         if (index == 1) {
-            var newBloon = new BlueBloon();
+            newBloon = new BlueBloon(this);
             newBloon.mesh = bloon_mesh;
             this.bloonArray.push(newBloon);
         }
         if (index == 2) {
-            var newBloon = new GreenBloon();
+            newBloon = new GreenBloon(this);
             newBloon.mesh = bloon_mesh;
             this.bloonArray.push(newBloon);
         }
         if (index == 3) {
-            var newBloon = new YellowBloon();
+            newBloon = new YellowBloon(this);
             newBloon.mesh = bloon_mesh;
             this.bloonArray.push(newBloon);
         }
+
+        return newBloon;
     }
 
     deleteBloons(bloondelete_array) {
@@ -78,7 +83,7 @@ export class BloonManager {
     updateBloonsPositions(delta) {
         const bloondelete_array = new Array();
         for (let i = 0; i < this.bloonArray.length; i++) {
-            if (this.bloonArray[i].hp == 0) {
+            if (this.bloonArray[i].todelete) {
                 bloondelete_array.push(this.bloonArray[i])
             }
             this.bloonArray[i].update_position(delta)
@@ -88,55 +93,86 @@ export class BloonManager {
 }
 
 class Bloon {
-    constructor() {
+    constructor(bloonManager) {
+        this.bloonManager = bloonManager;
         this.mesh = undefined;
         this.speed = undefined;
         this.hp = undefined;
-        this.target = new Vector3(1, 0, -2);
+        this.target = new Vector3(0, 0, 0);
+        this.todelete = false;
+        this.index = null;
+        this.hitbox = null;
     }
 
     update_position(delta) {
-        let v = this.target.clone();
+        let v = new Vector3(
+            this.target.x - this.mesh.position.x,
+            this.target.y - this.mesh.position.y,
+            this.target.z - this.mesh.position.z,
+        )
         v.normalize().multiplyScalar(this.speed * delta);
         this.mesh.position.add(v);
     }
 
-    death() { }
+    hit(damage) {
+        if (damage >= this.hp) {
+            this.todelete = true;
+            let newBloon = this.bloonManager.addBloon(this.index - 1, this.mesh.position)
+            return newBloon.hit(damage - this.hp);
+        } else {
+            return this;
+        }
+    }
 
 }
 
 class RedBloon extends Bloon {
-    constructor() {
-        super();
-        this.speed = 0.1;
+    constructor(bloonManager) {
+        super(bloonManager);
+        this.speed = 0.05;
         this.hp = 1;
+        this.index = 0;
+        this.hitbox = 0.;
+    }
+
+    hit(damage) {
+        if (damage >= this.hp) {
+            this.todelete = true;
+        }
+        return this
     }
 
 }
 
 class BlueBloon extends Bloon {
-    constructor() {
-        super();
-        this.speed = 0.2;
+    constructor(bloonManager) {
+        super(bloonManager);
+        this.speed = 0.1;
         this.hp = 1;
+        this.index = 1;
+        this.hitbox = 1.1 * 0.4;
     }
 
 }
 
 class GreenBloon extends Bloon {
-    constructor() {
-        super();
-        this.speed = 0.3;
+    constructor(bloonManager) {
+        super(bloonManager);
+        this.speed = 0.15;
         this.hp = 1;
+        this.index = 2;
+        this.hitbox = 1.2 * 0.4;
     }
 
 }
 
 class YellowBloon extends Bloon {
-    constructor() {
-        super();
-        this.speed = 0.4;
+    constructor(bloonManager) {
+        super(bloonManager);
+        this.speed = 0.2;
         this.hp = 1;
+        this.index = 3;
+        this.hitbox = 1.3 * 0.4;
     }
 
 }

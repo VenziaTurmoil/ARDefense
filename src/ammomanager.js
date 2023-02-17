@@ -42,14 +42,14 @@ export class AmmoManager {
         ammo_mesh.position.add(
             new Vector3(camera.position.x, camera.position.y, camera.position.z))
 
-        let target = new THREE.Vector3(0, 0, - 1);
-        target.applyQuaternion(camera.quaternion);
+        let direction = new THREE.Vector3(0, 0, - 1);
+        direction.applyQuaternion(camera.quaternion);
 
-        ammo_mesh.lookAt(target)
+        ammo_mesh.lookAt(direction)
         this.scene.add(ammo_mesh);
 
         if (this.future_type == 'dart') {
-            var newAmmo = new Dart(elapsedTime, target);
+            var newAmmo = new Dart(elapsedTime, direction);
             newAmmo.mesh = ammo_mesh;
             this.ammoArray.push(newAmmo);
         }
@@ -75,19 +75,58 @@ export class AmmoManager {
         }
         this.deleteAmmos(ammodelete_array)
     }
+
+    detectCollisions(bloonArray) {
+        const collitions = new Array();
+        this.ammoArray.forEach(ammo => {
+            let distmin = 15;
+            let bloonmin = null;
+            bloonArray.forEach(bloon => {
+                let dist = ammo.mesh.position.distanceTo(bloon.mesh.position);
+                if (dist < distmin && dist < ammo.hitbox + bloon.hitbox) {
+                    distmin = dist;
+                    bloonmin = bloon;
+                }
+            })
+            if (bloonmin) {
+                collitions.push({
+                    ammo: ammo,
+                    bloon: bloonmin
+                })
+            }
+        })
+        return collitions;
+    }
+
+    affectCollisions(collitions) {
+        const ammodelete_array = new Array();
+        collitions.forEach(collition => {
+            console.log(collitions.length)
+            if (--collition.ammo.pierce <= 0) {
+                ammodelete_array.push(collition.ammo);
+            }
+            collition.bloon.hit(collition.ammo.damage);
+        })
+        this.deleteAmmos(ammodelete_array);
+    }
+
 }
 
 class Ammo {
-    constructor(elapsedTime, target) {
+    constructor(elapsedTime, direction) {
         this.mesh = undefined;
         this.uptime = undefined;
         this.birth = elapsedTime;
         this.speed = undefined;
-        this.target = target;
+        this.direction = direction;
+        this.touchedBloons = new Array();
+        this.damage = null;
+        this.pierce = null;
+        this.hitbox = null;
     }
 
     update_position(delta) {
-        let v = this.target.clone();
+        let v = this.direction.clone();
         v.normalize().multiplyScalar(this.speed * delta);
         this.mesh.position.add(v);
     }
@@ -95,10 +134,13 @@ class Ammo {
 }
 
 class Dart extends Ammo {
-    constructor(elapsedTime, target) {
-        super(elapsedTime, target);
+    constructor(elapsedTime, direction) {
+        super(elapsedTime, direction);
         this.uptime = 2;
         this.speed = 0.8;
+        this.damage = 1;
+        this.pierce = 1;
+        this.hitbox = 0.2;
     }
 
 }

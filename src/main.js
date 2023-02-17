@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { AmmoManager } from './ammomanager';
 import { BloonManager } from './bloonmanager';
 
@@ -9,13 +8,10 @@ let container;
 let camera, scene, renderer, clock;
 let controller1, controller2;
 
+const STEPS_PER_FRAME = 4;
+
 let ammoMngr = new AmmoManager();
 let bloonMngr = new BloonManager();
-
-let raycaster;
-
-const intersected = [];
-const tempMatrix = new THREE.Matrix4();
 
 init();
 animate();
@@ -55,16 +51,10 @@ function init() {
   // controllers
 
   controller1 = renderer.xr.getController(0);
-  // controller1.addEventListener('selectstart', onSelectStart);
-  // controller1.addEventListener('selectend', onSelectEnd);
   scene.add(controller1);
 
   controller2 = renderer.xr.getController(1);
-  // controller2.addEventListener('selectstart', onSelectStart);
-  // controller2.addEventListener('selectend', onSelectEnd);
   scene.add(controller2);
-
-  raycaster = new THREE.Raycaster();
 
   //
 
@@ -86,85 +76,6 @@ function onWindowResize() {
 
 }
 
-// function onSelectStart(event) {
-
-//   const controller = event.target;
-
-//   const intersections = getIntersections(controller);
-
-//   if (intersections.length > 0) {
-
-//     const intersection = intersections[0];
-
-//     const object = intersection.object;
-//     object.material.emissive.b = 1;
-//     controller.attach(object);
-
-//     controller.userData.selected = object;
-
-//   }
-
-// }
-
-// function onSelectEnd(event) {
-
-//   const controller = event.target;
-
-//   if (controller.userData.selected !== undefined) {
-
-//     const object = controller.userData.selected;
-//     object.material.emissive.b = 0;
-//     group.attach(object);
-
-//     controller.userData.selected = undefined;
-
-//   }
-
-
-// }
-
-// function getIntersections(controller) {
-
-//   tempMatrix.identity().extractRotation(controller.matrixWorld);
-
-//   raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-//   raycaster.ray.direction.set(0, 0, - 1).applyMatrix4(tempMatrix);
-
-//   return raycaster.intersectObjects(group.children, false);
-
-// }
-
-// function intersectObjects(controller) {
-
-//   // Do not highlight when already selected
-
-//   if (controller.userData.selected !== undefined) return;
-
-//   const intersections = getIntersections(controller);
-
-//   if (intersections.length > 0) {
-
-//     const intersection = intersections[0];
-
-//     const object = intersection.object;
-//     object.material.emissive.r = 1;
-//     intersected.push(object);
-
-//   }
-
-// }
-
-// function cleanIntersected() {
-
-//   while (intersected.length) {
-
-//     const object = intersected.pop();
-//     object.material.emissive.r = 0;
-
-//   }
-
-// }
-
 //
 
 function animate() {
@@ -174,16 +85,16 @@ function animate() {
 }
 
 function render() {
-  let delta = clock.getDelta();
-  let elapsed = clock.elapsedTime;
 
-  // cleanIntersected();
+  for (let i = 0; i < STEPS_PER_FRAME; i++) {
+    let delta = clock.getDelta();
+    let elapsed = clock.elapsedTime;
 
-  // intersectObjects(controller1);
-  // intersectObjects(controller2);
-
-  ammoMngr.updateAmmosPositions(elapsed, delta);
-  bloonMngr.updateBloonsPositions(delta);
+    let collitions = ammoMngr.detectCollisions(bloonMngr.bloonArray)
+    ammoMngr.affectCollisions(collitions);
+    ammoMngr.updateAmmosPositions(elapsed, delta);
+    bloonMngr.updateBloonsPositions(delta);
+  }
 
   renderer.render(scene, camera);
 
