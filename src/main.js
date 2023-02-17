@@ -3,12 +3,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { AmmoManager } from './ammomanager';
+import { BloonManager } from './bloonmanager';
 
 let container;
 let camera, scene, renderer, clock;
 let controller1, controller2;
 
 let ammoMngr = new AmmoManager();
+let bloonMngr = new BloonManager();
 
 let raycaster;
 
@@ -71,6 +73,7 @@ function init() {
   //
 
   ammoMngr.setScene(scene);
+  bloonMngr.setScene(scene);
 
 }
 
@@ -180,9 +183,14 @@ function render() {
   // intersectObjects(controller2);
 
   ammoMngr.updateAmmosPositions(elapsed, delta);
+  bloonMngr.updateBloonsPositions(delta);
 
   renderer.render(scene, camera);
 
 }
 
 setTimeout(() => ammoMngr.addAmmo(camera, 5000), 5000);
+setTimeout(() => bloonMngr.addBloon(0), 4000);
+setTimeout(() => bloonMngr.addBloon(1), 3000);
+setTimeout(() => bloonMngr.addBloon(2), 2000);
+setTimeout(() => bloonMngr.addBloon(3), 1000);

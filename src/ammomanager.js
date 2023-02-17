@@ -5,7 +5,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class AmmoManager {
     constructor() {
-        console.log(1);
         this.scene = undefined
         // ---- Ammo List ----
         this.ammoArray = new Array();
@@ -74,7 +73,7 @@ export class AmmoManager {
             }
             this.ammoArray[i].update_position(delta)
         }
-        this.deleteAmmos(ammodelete_array, this.scene)
+        this.deleteAmmos(ammodelete_array)
     }
 }
 
