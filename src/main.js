@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 import { AmmoManager } from './ammomanager';
 import { BloonManager } from './bloonmanager';
+import { RoundManager } from './roundmanager';
 
 let container;
 let camera, scene, renderer, clock;
@@ -12,6 +13,7 @@ const STEPS_PER_FRAME = 4;
 
 let ammoMngr = new AmmoManager();
 let bloonMngr = new BloonManager();
+let roundMngr = new RoundManager(bloonMngr);
 
 init();
 animate();
@@ -51,9 +53,13 @@ function init() {
   // controllers
 
   controller1 = renderer.xr.getController(0);
+  controller1.addEventListener('selectstart', onSelectStart);
+  controller1.addEventListener('selectend', onSelectEnd);
   scene.add(controller1);
 
   controller2 = renderer.xr.getController(1);
+  controller2.addEventListener('selectstart', onSelectStart);
+  controller2.addEventListener('selectend', onSelectEnd);
   scene.add(controller2);
 
   //
@@ -78,6 +84,14 @@ function onWindowResize() {
 
 //
 
+function onSelectStart() {
+  console.log(camera.position);
+}
+
+function onSelectEnd() {
+  roundMngr.send_round();
+}
+
 function animate() {
 
   renderer.setAnimationLoop(render);
@@ -99,9 +113,3 @@ function render() {
   renderer.render(scene, camera);
 
 }
-
-setTimeout(() => ammoMngr.addAmmo(camera, 5000), 5000);
-setTimeout(() => bloonMngr.addBloon(0), 4000);
-setTimeout(() => bloonMngr.addBloon(1), 3000);
-setTimeout(() => bloonMngr.addBloon(2), 2000);
-setTimeout(() => bloonMngr.addBloon(3), 1000);

@@ -14,8 +14,6 @@ export class BloonManager {
         this.loader = new GLTFLoader();
         this.loader.setPath('assets/models/')
 
-        this.future_type = 'dart';
-
         this.load();
 
     }
@@ -38,11 +36,12 @@ export class BloonManager {
     }
 
     addBloon(index, position = new Vector3(Math.random() * 2, Math.random() * 2, Math.random() * 2)) {
-        // AMMO MESH
+
         let bloon_mesh = this.bloonMeshes[index].clone();
         bloon_mesh.position.add(position);
 
         this.scene.add(bloon_mesh);
+        console.log(this.scene)
 
         let newBloon = null;
 
@@ -132,7 +131,7 @@ class RedBloon extends Bloon {
         this.speed = 0.05;
         this.hp = 1;
         this.index = 0;
-        this.hitbox = 0.;
+        this.hitbox = 0.4;
     }
 
     hit(damage) {
@@ -173,6 +172,7 @@ class YellowBloon extends Bloon {
         this.hp = 1;
         this.index = 3;
         this.hitbox = 1.3 * 0.4;
+        console.log(this)
     }
 
 }
