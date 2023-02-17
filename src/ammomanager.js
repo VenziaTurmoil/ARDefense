@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Euler, Vector3 } from 'three';
+import { Vector3 } from 'three';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
@@ -12,24 +12,24 @@ export class AmmoManager {
         // ---- Temporary variables ----
         this.newAmmoMeshToCreate = undefined;
 
+        this.loader = new GLTFLoader();
+        this.loader.setPath('assets/models/')
+
         this.future_type = 'dart';
 
-        function loadData(that) {
-            new GLTFLoader()
-                .setPath('assets/models/')
-                .load('dartOnly__1_.glb', dartReader(that));
+        this.load('dartOnly__1_.glb');
+
+    }
+
+    load(path) {
+        this.loader.load(path, this.dartReader(this));
+    }
+
+    dartReader(that) {
+        return (gltf) => {
+            that.newAmmoMeshToCreate = null;
+            that.newAmmoMeshToCreate = gltf.scene;
         }
-
-
-        function dartReader(that) {
-            return (gltf) => {
-                that.newAmmoMeshToCreate = null;
-                that.newAmmoMeshToCreate = gltf.scene;
-            }
-        }
-
-        loadData(this);
-
     }
 
     setScene(scene) {
@@ -98,8 +98,8 @@ class Ammo {
 class Dart extends Ammo {
     constructor(elapsedTime, target) {
         super(elapsedTime, target);
-        this.uptime = 1000;
-        this.speed = 0.5;
+        this.uptime = 2;
+        this.speed = 0.8;
     }
 
 }
