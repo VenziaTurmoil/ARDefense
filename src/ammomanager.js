@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class AmmoManager {
     constructor() {
-
+        console.log(1);
         this.scene = undefined
         // ---- Ammo List ----
         this.ammoArray = new Array();
