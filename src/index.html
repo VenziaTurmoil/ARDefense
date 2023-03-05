@@ -11,12 +11,44 @@
 		<script src="./jsm/libs/ammo.wasm.js"></script>
 		-->
 	<script src="./main.js" defer></script>
+	<style>
+		.popupdiv {
+            display: none;
+            opacity: 0.7;
+            position: absolute;
+            left: 5%;
+            bottom: 5%;
+            box-sizing: border-box;
+            padding: 25px;
+            width: 90%;
+            color: white;
+            font-family: roboto-font, sans-serif;
+            background-color: black;
+            border-radius: 6px;
+        }
+		.buttonYesNo {
+            width: 40%;
+            height: 48px;
+
+            font-size: 1.5em;
+            border-radius: 6px;
+            border: none;
+        }
+	</style>
 </head>
 
 <body>
 	<!-- Enable this line if your app uses a predefined 'container' div
 	<div id="container"></div>	
 		-->
+
+	    <!-- CREATE MENU -->
+		<div id="createRoundDiv" class="popupdiv">
+			<div style="display:flex;  align-items: center; justify-content: center;">
+				<button class="buttonRound" id="buttonRound">Start next Round</button>
+			</div>
+		</div>
+	
 </body>
 
 </html>

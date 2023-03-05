@@ -41,7 +41,6 @@ export class BloonManager {
         bloon_mesh.position.add(position);
 
         this.scene.add(bloon_mesh);
-        console.log(this.scene)
 
         let newBloon = null;
 
@@ -172,7 +171,6 @@ class YellowBloon extends Bloon {
         this.hp = 1;
         this.index = 3;
         this.hitbox = 1.3 * 0.4;
-        console.log(this)
     }
 
 }

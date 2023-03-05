@@ -85,11 +85,10 @@ function onWindowResize() {
 //
 
 function onSelectStart() {
-  console.log(camera.position);
 }
 
 function onSelectEnd() {
-  roundMngr.send_round();
+  document.getElementById("createRoundDiv").style.display= "inline-block";
 }
 
 function animate() {
